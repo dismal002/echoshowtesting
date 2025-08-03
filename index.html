@@ -2,38 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Write File to Directory</title>
+  <title>Download Binary and Save</title>
 </head>
 <body>
-  <button id="saveButton">Save File to Directory</button>
+  <button id="saveFromURL">Hack Me!</button>
 
   <script>
-    async function writeFileToDirectory() {
+    async function downloadAndSaveBinaryFile() {
+      const fileUrl = 'https://github.com/dismal002/echoshowtesting/raw/refs/heads/main/Nova.apk'; // change this to your binary file URL
+
       try {
-        // Prompt user to pick a directory
+        // Fetch the binary file as a blob
+        const response = await fetch(fileUrl);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const blob = await response.blob();
+
+        // Prompt the user to select a directory
         const dirHandle = await window.showDirectoryPicker();
 
-        // Create or overwrite a file named 'example.txt'
-        const fileHandle = await dirHandle.getFileHandle('example.txt', { create: true });
-
-        // Create a writable stream
+        // Create a file with the same name or a fixed one
+        const fileHandle = await dirHandle.getFileHandle('downloaded_file.bin', { create: true });
         const writable = await fileHandle.createWritable();
 
-        // Write some text to the file
-        await writable.write('Hello from JavaScript!');
+        // Write the blob to the file
+        await writable.write(blob);
 
-        // Close the stream
+        // Finalize write
         await writable.close();
 
-        alert('File saved successfully!');
+        alert('File downloaded and saved successfully!');
       } catch (err) {
-        console.error('Error:', err);
-        alert('Failed to save file or user cancelled.');
+        console.error('Error downloading or saving:', err);
+        alert('Something went wrong.');
       }
     }
 
-    // Attach the function to the button click
-    document.getElementById('saveButton').addEventListener('click', writeFileToDirectory);
+    document.getElementById('saveFromURL').addEventListener('click', downloadAndSaveBinaryFile);
   </script>
 </body>
 </html>
