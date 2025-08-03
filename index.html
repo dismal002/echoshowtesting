@@ -2,42 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Download Binary and Save</title>
+  <title>Write Binary File</title>
 </head>
 <body>
-  <button id="saveFromURL">Hack Me!</button>
+  <button id="saveBinary">Save Binary File</button>
 
   <script>
-    async function downloadAndSaveBinaryFile() {
-      const fileUrl = 'https://github.com/dismal002/echoshowtesting/raw/refs/heads/main/Nova.apk'; // change this to your binary file URL
-
+    async function writeBinaryFile() {
       try {
-        // Fetch the binary file as a blob
-        const response = await fetch(fileUrl);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const blob = await response.blob();
-
-        // Prompt the user to select a directory
+        // Prompt user to select a directory
         const dirHandle = await window.showDirectoryPicker();
 
-        // Create a file with the same name or a fixed one
-        const fileHandle = await dirHandle.getFileHandle('downloaded_file.bin', { create: true });
+        // Create or overwrite binary file
+        const fileHandle = await dirHandle.getFileHandle('output.bin', { create: true });
         const writable = await fileHandle.createWritable();
 
-        // Write the blob to the file
-        await writable.write(blob);
+        // Example binary data (e.g., first 5 bytes of a PNG file header)
+        const binaryData = new Uint8Array([
+          0x89, 0x50, 0x4E, 0x47, 0x0D, // PNG signature start
+          0x0A, 0x1A, 0x0A               // PNG signature end
+        ]);
+
+        // Write the binary data
+        await writable.write(binaryData);
 
         // Finalize write
         await writable.close();
 
-        alert('File downloaded and saved successfully!');
+        alert('Binary file saved!');
       } catch (err) {
-        console.error('Error downloading or saving:', err);
-        alert('Something went wrong.');
+        console.error('Failed to write binary file:', err);
       }
     }
 
-    document.getElementById('saveFromURL').addEventListener('click', downloadAndSaveBinaryFile);
+    document.getElementById('saveBinary').addEventListener('click', writeBinaryFile);
   </script>
 </body>
 </html>
