@@ -1,16 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Write File to Directory</title>
+</head>
 <body>
+  <button id="saveButton">Save File to Directory</button>
 
+  <script>
+    async function writeFileToDirectory() {
+      try {
+        // Prompt user to pick a directory
+        const dirHandle = await window.showDirectoryPicker();
 
-<button onclick="myFunction()">Click me</button>
+        // Create or overwrite a file named 'example.txt'
+        const fileHandle = await dirHandle.getFileHandle('example.txt', { create: true });
 
+        // Create a writable stream
+        const writable = await fileHandle.createWritable();
 
-<script>
-function myFunction() {
-  window.showOpenFilePicker()
-}
-</script>
+        // Write some text to the file
+        await writable.write('Hello from JavaScript!');
 
+        // Close the stream
+        await writable.close();
+
+        alert('File saved successfully!');
+      } catch (err) {
+        console.error('Error:', err);
+        alert('Failed to save file or user cancelled.');
+      }
+    }
+
+    // Attach the function to the button click
+    document.getElementById('saveButton').addEventListener('click', writeFileToDirectory);
+  </script>
 </body>
 </html>
